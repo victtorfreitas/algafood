@@ -2,14 +2,22 @@ package com.algaworks.algafood.infrastructure.repository;
 
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.repository.EstadoRepository;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
+@Component
 public class EstadoRepositoryImpl implements EstadoRepository {
+
+    @PersistenceContext
+    private EntityManager manager;
 
     @Override
     public List<Estado> todos() {
-        return null;
+        return manager.createQuery("from Estado", Estado.class)
+                .getResultList();
     }
 
     @Override
