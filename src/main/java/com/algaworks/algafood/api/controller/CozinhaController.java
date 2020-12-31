@@ -25,7 +25,7 @@ import java.util.List;
 public class CozinhaController {
 
     private final CozinhaRepository cozinhaRepository;
-    private CadastroCozinhaService cozinhaService;
+    private final CadastroCozinhaService cozinhaService;
 
     public CozinhaController(CozinhaRepository cozinhaRepository, CadastroCozinhaService cozinhaService) {
         this.cozinhaRepository = cozinhaRepository;
