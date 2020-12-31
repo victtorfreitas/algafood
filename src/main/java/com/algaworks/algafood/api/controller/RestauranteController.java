@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurantes")
@@ -37,16 +38,20 @@ public class RestauranteController {
 
     @GetMapping
     public List<Restaurante> listar() {
-        return restauranteRepository.todos();
+        return restauranteRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Restaurante> buscar(@PathVariable Long id) {
-        Restaurante restaurante = restauranteRepository.porId(id);
-        if (restaurante != null) {
-            return ResponseEntity.ok(restaurante);
+        Optional<Restaurante> restaurante = restauranteRepository.findById(id);
+        if (IsNotRestaurante(restaurante)) {
+            return ResponseEntity.ok(restaurante.get());
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private boolean IsNotRestaurante(Optional<Restaurante> restaurante) {
+        return !restaurante.isEmpty();
     }
 
     @PostMapping
@@ -72,15 +77,15 @@ public class RestauranteController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
-        Restaurante restaurante = restauranteRepository.porId(id);
+        Optional<Restaurante> restaurante = restauranteRepository.findById(id);
 
-        if (restaurante == null) {
+        if (restaurante.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        merge(campos, restaurante);
+        merge(campos, restaurante.get());
 
-        return atualizar(id, restaurante);
+        return atualizar(id, restaurante.get());
     }
 
     private void merge(Map<String, Object> campos, Restaurante restaurante) {

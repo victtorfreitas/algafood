@@ -31,16 +31,20 @@ public class CadastroRestauranteService {
                     String.format("Não existe cadastro de cozinha com o código %d", idCozinha));
         }
         restaurante.setCozinha(cozinha.get());
-        return restauranteRepository.adicionar(restaurante);
+        return restauranteRepository.save(restaurante);
     }
 
     public Restaurante atualizar(Long id, Restaurante restaurante) {
-        Restaurante restauranteBd = restauranteRepository.porId(id);
-        if (restauranteBd != null) {
-            BeanUtils.copyProperties(restaurante, restauranteBd, "id");
-            return salvar(restauranteBd);
+        Optional<Restaurante> restauranteBd = restauranteRepository.findById(id);
+        if (isNotRestaurante(restauranteBd)) {
+            BeanUtils.copyProperties(restaurante, restauranteBd.get(), "id");
+            return salvar(restauranteBd.get());
         }
         throw new EntidadeNaoEncontradaException(
                 String.format("Não existe cadastro de Restaurante com o código $d", id));
+    }
+
+    private boolean isNotRestaurante(Optional<Restaurante> restauranteBd) {
+        return !restauranteBd.isEmpty();
     }
 }
