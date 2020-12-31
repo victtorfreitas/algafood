@@ -1,5 +1,6 @@
 package com.algaworks.algafood.infrastructure.repository;
 
+import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ public class RestauranteRepositoryImpl implements RestauranteRepository {
 
     @Override
     public Restaurante porId(Long id) {
-        return null;
+        return manager.find(Restaurante.class, id);
     }
 
     @Override
