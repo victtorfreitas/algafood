@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cozinhas")
@@ -34,16 +35,20 @@ public class CozinhaController {
 
     @GetMapping
     public List<Cozinha> listar() {
-        return cozinhaRepository.todas();
+        return cozinhaRepository.findAll();
     }
 
     @GetMapping("/{cozinhaId}")
     public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long id) {
-        Cozinha cozinha = getCozinha(id);
-        if (cozinha != null) {
-            return ResponseEntity.ok(cozinha);
+        Optional<Cozinha> cozinha = getCozinha(id);
+        if (notIsEmpty(cozinha)) {
+            return ResponseEntity.ok(cozinha.get());
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private boolean notIsEmpty(Optional<Cozinha> cozinha) {
+        return !cozinha.isEmpty();
     }
 
     @PostMapping
@@ -54,10 +59,10 @@ public class CozinhaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Cozinha> atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
-        Cozinha cozinhaBd = getCozinha(id);
-        if (cozinha != null) {
-            BeanUtils.copyProperties(cozinha, cozinhaBd, "id");
-            return ResponseEntity.ok(cozinhaService.salvar(cozinhaBd));
+        Optional<Cozinha> cozinhaBd = getCozinha(id);
+        if (notIsEmpty(cozinhaBd)) {
+            BeanUtils.copyProperties(cozinha, cozinhaBd.get(), "id");
+            return ResponseEntity.ok(cozinhaService.salvar(cozinhaBd.get()));
         }
         return ResponseEntity.notFound().build();
     }
@@ -75,7 +80,7 @@ public class CozinhaController {
         }
     }
 
-    private Cozinha getCozinha(Long id) {
-        return cozinhaRepository.porId(id);
+    private Optional<Cozinha> getCozinha(Long id) {
+        return cozinhaRepository.findById(id);
     }
 }
